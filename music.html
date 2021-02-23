@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+    <link href="./css/own.css">
+
+</head>
+<body>
+
+
+<div class="container mt-3" id="app">
+
+    <div class="row">
+        <div class="col">
+                <div class="float-left mt-1">
+                    <p class="text-muted">输入要搜索的歌名</p>
+                </div>
+                <div class="form-group mx-sm-1 mb-2 col-sm-6 float-left">
+                    <input type="text" class="form-control col-sm-12" id="name" v-model="query">
+                </div>
+                <button type="submit" class="btn btn-primary mb-2" v-on:click="searchMusic()">Search</button>
+        </div>
+    </div>
+
+    <div class="row width">
+        <audio v-bind:src="musicUrl" controls="controls" style="width: 100%;">
+            your browser does not support the audio element
+        </audio>
+    </div>
+
+
+    <div class="row">
+        <div class="col">
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item d-flex justify-content-between align-items-center col-sm-12" v-for="item in musicList">
+                    {{item.name}}{{item.artists.name}}
+                    <button type="button" class="btn btn-outline-success" v-on:click="playMusic(item.id)">Play</button>
+                </li>
+            </ul>
+        </div>
+
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+<script src="./bootstrap/bootstrap-4.6.0-dist/js/bootstrap.bundle.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+
+
+
+<script>
+    var app=new Vue({
+        el:"#app",
+        data:{
+            query:"",
+            musicUrl:"",
+            musicList: [],
+        },
+        methods:{
+            searchMusic: function() {
+                var that = this;
+                axios.get("https://autumnfish.cn/search?keywords=" + this.query).then(
+                    function(response) {
+                        that.musicList = response.data.result.songs;
+                    },
+                    function(err) {}
+                );
+            },
+            playMusic:function (musicId){
+                var that = this;
+                // 获取歌曲地址
+                axios.get("https://autumnfish.cn/song/url?id=" + musicId).then(
+                    function(response) {
+                        that.musicUrl = response.data.data[0].url;
+                    },
+                    function(err) {
+
+                    }
+                );
+            }
+        }
+    })
+</script>
+
+
+
+
+
+</body>
+</html>
